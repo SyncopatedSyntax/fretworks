@@ -1,17 +1,17 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
-    { "source": "/chord", "destination": "https://chord-zone.vercel.app/chord" },
-    { "source": "/chord/:path*", "destination": "https://chord-zone.vercel.app/chord/:path*" },
+    { "source": "/chord", "destination": "https://chord-trainer-mauve.vercel.app/chord" },
+    { "source": "/chord/:path*", "destination": "https://chord-trainer-mauve.vercel.app/chord/:path*" },
 
-    { "source": "/diatonic", "destination": "https://diatonic-zone.vercel.app/diatonic" },
-    { "source": "/diatonic/:path*", "destination": "https://diatonic-zone.vercel.app/diatonic/:path*" },
+    { "source": "/diatonic", "destination": "https://diatonic-chords-trainer.vercel.app/diatonic" },
+    { "source": "/diatonic/:path*", "destination": "https://diatonic-chords-trainer.vercel.app/diatonic/:path*" },
 
-    { "source": "/melodic-minor", "destination": "https://melodic-minor-zone.vercel.app/melodic-minor" },
-    { "source": "/melodic-minor/:path*", "destination": "https://melodic-minor-zone.vercel.app/melodic-minor/:path*" },
+    { "source": "/melodic-minor", "destination": "https://melodic-minor-trainer.vercel.app/melodic-minor" },
+    { "source": "/melodic-minor/:path*", "destination": "https://melodic-minor-trainer.vercel.app/melodic-minor/:path*" },
 
-    { "source": "/altered", "destination": "https://altered-zone.vercel.app/altered" },
-    { "source": "/altered/:path*", "destination": "https://altered-zone.vercel.app/altered/:path*" },
+    { "source": "/altered", "destination": "https://altered-trainer.vercel.app/altered" },
+    { "source": "/altered/:path*", "destination": "https://altered-trainer.vercel.app/altered/:path*" },
 
     { "source": "/(.*)", "destination": "/index.html" }
   ]

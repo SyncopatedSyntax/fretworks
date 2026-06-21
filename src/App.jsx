@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
    Fretworks — landing portal (BRAND is a placeholder name; change it in one spot below)
    Design language matches the apps: bg #0f0e17, surface #13121f, border
    #2a2840, signature #ffd93d, and the DC scale-degree palette as accents.
-   Each tool's accent maps to a harmonic function it deals with:
-     ChordTrainer = root (#ff4757) · Diatonic = navigation/sus (#74b9ff)
-     Melodic Minor = color/9 (#2ed573) · Altered = tension/b9 (#7c5cbf)
+   Each tool's accent is drawn from that app's own signature colour:
+     ChordTrainer = major-group gold (#ffd93d) · Diatonic = major-chord red (#ff6b6b)
+     Melodic Minor = key-selector blue (#74b9ff) · Altered = resolution teal (#2dd4bf)
 
    Card banners are real app screenshots, cropped to each tool's signature
    diagram and embedded as base64 so this stays a single self-contained file.
@@ -20,32 +20,32 @@ const MAKER = "Zak";
 const TOOLS = [
   {
     key: "chord", name: "ChordTrainer", emoji: "🎸",
-    accent: "#ff4757", skill: "All levels",
+    accent: "#ffd93d", skill: "All levels",
     blurb: "Build a working chord vocabulary with spaced-repetition practice, quizzes, and progressions of the day.",
     chips: ["SRS practice", "Chord library", "Audio", "Progressions"],
-    url: "https://chord-trainer-mauve.vercel.app",
+    path: "/chord/",
     note: "Start here",
   },
   {
     key: "diatonic", name: "Diatonic Chord Trainer", emoji: "🗺️",
-    accent: "#74b9ff", skill: "Beginner–Intermediate",
+    accent: "#ff6b6b", skill: "Beginner–Intermediate",
     blurb: "Find every diatonic chord\u2019s root across the whole neck using named fretboard shapes.",
     chips: ["Fretboard shapes", "Root positions", "Diatonic harmony"],
-    url: "https://diatonic-chords-trainer.vercel.app",
+    path: "/diatonic/",
   },
   {
     key: "mm", name: "Melodic Minor Trainer", emoji: "🎼",
-    accent: "#2ed573", skill: "Intermediate–Advanced",
+    accent: "#74b9ff", skill: "Intermediate–Advanced",
     blurb: "Master the seven melodic minor modes and where each one earns its keep across styles.",
     chips: ["7 modes", "5 positions + full neck", "Chord\u2013scale map", "Quiz"],
-    url: "https://melodic-minor-trainer.vercel.app",
+    path: "/melodic-minor/",
   },
   {
     key: "alt", name: "Altered Scale Trainer", emoji: "⚡",
-    accent: "#7c5cbf", skill: "Advanced",
+    accent: "#2dd4bf", skill: "Advanced",
     blurb: "Play the altered sound over a V7 chord and see exactly how its tensions resolve into the chord you\u2019re landing on.",
     chips: ["V7alt → I", "Target tones", "Guide tones", "5 positions"],
-    url: "https://altered-trainer.vercel.app",
+    path: "/altered/",
   },
 ];
 
@@ -195,17 +195,7 @@ function HeroFretboard() {
   );
 }
 
-export default function App() {
-  useEffect(() => {
-    const id = "jgt-fonts";
-    if (!document.getElementById(id)) {
-      const l = document.createElement("link");
-      l.id = id; l.rel = "stylesheet";
-      l.href = "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;0,700;1,600&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;600&display=swap";
-      document.head.appendChild(l);
-    }
-  }, []);
-
+export default function Brochure() {
   return (
     <div className="jgt-root">
       <style>{CSS}</style>
@@ -228,9 +218,12 @@ export default function App() {
             </svg>
             <span className="brand-name">{BRAND}</span>
           </div>
-          <a className="kofi-link" href={KOFI} target="_blank" rel="noopener noreferrer">
-            ☕ Support
-          </a>
+          <div className="topbar-links">
+            <a className="kofi-link" href="/app">Open app →</a>
+            <a className="kofi-link" href={KOFI} target="_blank" rel="noopener noreferrer">
+              ☕ Support
+            </a>
+          </div>
         </header>
 
         {/* Hero */}
@@ -248,7 +241,7 @@ export default function App() {
           <HeroFretboard />
 
           <div className="cta-row">
-            <a className="btn btn-primary" href={tool("chord").url} target="_blank" rel="noopener noreferrer">
+            <a className="btn btn-primary" href={tool("chord").path}>
               Start with ChordTrainer →
             </a>
             <a className="btn btn-ghost" href="#tools">Browse all tools</a>
@@ -262,7 +255,7 @@ export default function App() {
           <h2 className="h2">The toolbox</h2>
           <div className="tools">
             {TOOLS.map((t) => (
-              <a key={t.key} className="card" href={t.url} target="_blank" rel="noopener noreferrer"
+              <a key={t.key} className="card" href={t.path}
                 style={{ "--accent": t.accent }} aria-label={"Launch " + t.name}>
                 <span className="card-bar" />
                 <span className="phone">
@@ -297,7 +290,7 @@ export default function App() {
               const t = tool(p.key);
               return (
                 <li key={p.key} className="step" style={{ "--accent": t.accent }}>
-                  <a className="step-link" href={t.url} target="_blank" rel="noopener noreferrer">
+                  <a className="step-link" href={t.path}>
                     <span className="stepnum">{String(i + 1).padStart(2, "0")}</span>
                     <span className="step-body">
                       <span className="step-name">{t.name} <span className="step-go">↗</span></span>
@@ -417,6 +410,7 @@ const CSS = `
 .wrap{max-width:1000px;margin:0 auto;padding:0 20px 64px;}
 
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 0 16px;}
+.topbar-links{display:flex;align-items:center;gap:8px;}
 .brand{display:flex;align-items:center;gap:10px;}
 .brand-mark{width:36px;height:28px;flex-shrink:0;}
 .brand-name{font-family:"Fraunces","Space Grotesk",serif;font-weight:600;font-size:34px;letter-spacing:-0.01em;font-optical-sizing:auto;}

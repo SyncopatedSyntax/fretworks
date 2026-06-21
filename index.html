@@ -45,11 +45,23 @@
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
     <script>
-      if ("serviceWorker" in navigator) {
+      (function () {
+        if (!("serviceWorker" in navigator)) return;
+        var isLocal = location.hostname === "localhost" || location.hostname === "127.0.0.1";
+        if (isLocal) {
+          // Dev: never run the SW — it caches across the multi-zone proxy and can
+          // serve the shell (Brochure) for /chord, /diatonic, … paths. Also
+          // unregister + clear caches to heal any stale SW from a prior session.
+          navigator.serviceWorker.getRegistrations().then(function (rs) {
+            rs.forEach(function (r) { r.unregister(); });
+          });
+          if (window.caches) caches.keys().then(function (ks) { ks.forEach(function (k) { caches.delete(k); }); });
+          return;
+        }
         window.addEventListener("load", function () {
           navigator.serviceWorker.register("/sw.js").catch(function () {});
         });
-      }
+      })();
     </script>
   </body>
 </html>

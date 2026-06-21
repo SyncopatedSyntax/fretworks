@@ -220,8 +220,9 @@ export default function Brochure() {
           </div>
           <div className="topbar-links">
             <a className="kofi-link" href="/app">Open app →</a>
-            <a className="kofi-link" href={KOFI} target="_blank" rel="noopener noreferrer">
-              ☕ Support
+            <a className="kofi-link kofi-support" href={KOFI} target="_blank" rel="noopener noreferrer" aria-label="Support on Ko-fi">
+              <span className="kofi-support-full">☕ Support</span>
+              <span className="kofi-support-icon" aria-hidden="true">☕</span>
             </a>
           </div>
         </header>
@@ -414,8 +415,9 @@ const CSS = `
 .brand{display:flex;align-items:center;gap:10px;}
 .brand-mark{width:36px;height:28px;flex-shrink:0;}
 .brand-name{font-family:"Fraunces","Space Grotesk",serif;font-weight:600;font-size:34px;letter-spacing:-0.01em;font-optical-sizing:auto;}
-.kofi-link{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--muted);
+.kofi-link{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--muted);white-space:nowrap;
   text-decoration:none;border:1px solid var(--border);border-radius:9px;padding:7px 12px;transition:.18s;}
+.kofi-support-icon{display:none;}
 .kofi-link:hover{color:var(--accent-y);border-color:var(--accent-y);}
 
 .hero{padding:30px 0 8px;}
@@ -536,6 +538,8 @@ a:focus-visible,.card:focus-visible{outline:2px solid var(--accent-y);outline-of
   .tools{grid-template-columns:1fr;}
   .two-col{grid-template-columns:1fr;}
   .btn{flex:1 1 auto;justify-content:center;}
+  .kofi-support .kofi-support-full{display:none;}
+  .kofi-support .kofi-support-icon{display:inline;}
 }
 @media (prefers-reduced-motion:reduce){
   .hdot,.hdot.in,.hdot.out,.hlines,.hlines.in,.hlines.out,.hmw,.hmw.in,.hmw.out{animation:none;opacity:1;transform:none;}

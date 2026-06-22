@@ -6,7 +6,7 @@ import { TopBar, InstallPrompt, TOOLS, tokens } from "@fretworks/design";
 export default function Launcher() {
   return (
     <div style={{ background: tokens.bg, color: tokens.text, minHeight: "100vh" }}>
-      <TopBar />
+      <TopBar homeHref="/" />
       <main className="fw-launcher">
         <h1 className="fw-launcher-title">Your toolbox</h1>
         <p className="fw-launcher-sub">Pick a trainer to jump straight in.</p>

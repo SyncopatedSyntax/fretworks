@@ -1,10 +1,10 @@
 // Single service worker for the whole unified Fretworks origin. Covers the
 // shell (/, /app) AND the proxied trainer zones (/chord, /diatonic, …) via
 // runtime caching, so the entire toolbox installs once and works offline.
-const CACHE = "fretworks-v3";
+const CACHE = "fretworks-v4";
 // Proxied trainer zones — these must NEVER fall back to the shell's index.html
 // (the shell renders the marketing Brochure for them, causing a click-loop).
-const ZONE_RE = /^\/(chord|diatonic|melodic-minor|altered)(\/|$)/;
+const ZONE_RE = /^\/(chord|diatonic|melodic-minor|altered|circle)(\/|$)/;
 // App shell to precache so the launcher opens with no network.
 const SHELL = [
   "/",

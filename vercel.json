@@ -13,6 +13,9 @@
     { "source": "/altered", "destination": "https://altered-trainer.vercel.app/altered" },
     { "source": "/altered/(.*)", "destination": "https://altered-trainer.vercel.app/altered/$1" },
 
+    { "source": "/circle", "destination": "https://circle-of-fifths-beta.vercel.app/circle" },
+    { "source": "/circle/(.*)", "destination": "https://circle-of-fifths-beta.vercel.app/circle/$1" },
+
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

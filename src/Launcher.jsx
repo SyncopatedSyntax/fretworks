@@ -5,7 +5,7 @@ import { TopBar, InstallPrompt, TOOLS, tokens } from "@fretworks/design";
    The installed app's start_url points here. */
 export default function Launcher() {
   return (
-    <div style={{ background: tokens.bg, color: tokens.text, minHeight: "100vh" }}>
+    <div style={{ background: tokens.bg, color: tokens.text, minHeight: "100vh", fontFamily: "var(--font-body)", WebkitFontSmoothing: "antialiased" }}>
       <TopBar homeHref="/" />
       <main className="fw-launcher">
         <h1 className="fw-launcher-title">Your toolbox</h1>

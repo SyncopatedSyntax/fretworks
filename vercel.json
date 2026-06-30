@@ -16,6 +16,9 @@
     { "source": "/circle", "destination": "https://circle-of-fifths-beta.vercel.app/circle" },
     { "source": "/circle/(.*)", "destination": "https://circle-of-fifths-beta.vercel.app/circle/$1" },
 
+    { "source": "/triads", "destination": "https://triads-trainer.vercel.app/triads" },
+    { "source": "/triads/(.*)", "destination": "https://triads-trainer.vercel.app/triads/$1" },
+
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

@@ -10,6 +10,8 @@ const ZONES = {
   "/diatonic": "http://localhost:5181",
   "/melodic-minor": "http://localhost:5182",
   "/altered": "http://localhost:5183",
+  "/circle": "http://localhost:5184",
+  "/triads": "http://localhost:5185",
 };
 
 export default defineConfig({

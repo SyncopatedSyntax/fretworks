@@ -11,6 +11,7 @@ import { BRAND, STUDIO, MAKER, KOFI, TOOLS, LEARNING_PATH as PATH } from "@fretw
 // Card banner screenshots (cropped WebP), served as static files.
 const SHOTS = {
   chord: "/shots/chord.webp",
+  focus: "/shots/focus.webp",
   diatonic: "/shots/diatonic.webp",
   mm: "/shots/mm.webp",
   alt: "/shots/alt.webp",

@@ -4,6 +4,9 @@
     { "source": "/chord", "destination": "https://chord-trainer-mauve.vercel.app/chord" },
     { "source": "/chord/(.*)", "destination": "https://chord-trainer-mauve.vercel.app/chord/$1" },
 
+    { "source": "/focus", "destination": "https://focused-chord-trainer.vercel.app/focus" },
+    { "source": "/focus/(.*)", "destination": "https://focused-chord-trainer.vercel.app/focus/$1" },
+
     { "source": "/diatonic", "destination": "https://diatonic-chords-trainer.vercel.app/diatonic" },
     { "source": "/diatonic/(.*)", "destination": "https://diatonic-chords-trainer.vercel.app/diatonic/$1" },
 

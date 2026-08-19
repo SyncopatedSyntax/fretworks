@@ -22,6 +22,9 @@
     { "source": "/triads", "destination": "https://triads-trainer.vercel.app/triads" },
     { "source": "/triads/(.*)", "destination": "https://triads-trainer.vercel.app/triads/$1" },
 
+    { "source": "/standards", "destination": "https://standards-trainer.vercel.app/standards" },
+    { "source": "/standards/(.*)", "destination": "https://standards-trainer.vercel.app/standards/$1" },
+
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

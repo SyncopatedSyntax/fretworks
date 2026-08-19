@@ -4,7 +4,7 @@
 const CACHE = "fretworks-v5";
 // Proxied trainer zones — these must NEVER fall back to the shell's index.html
 // (the shell renders the marketing Brochure for them, causing a click-loop).
-const ZONE_RE = /^\/(chord|focus|diatonic|melodic-minor|altered|circle|triads)(\/|$)/;
+const ZONE_RE = /^\/(chord|focus|diatonic|melodic-minor|altered|circle|triads|standards)(\/|$)/;
 // App shell to precache so the launcher opens with no network.
 const SHELL = [
   "/",

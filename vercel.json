@@ -25,6 +25,9 @@
     { "source": "/standards", "destination": "https://standards-trainer.vercel.app/standards" },
     { "source": "/standards/(.*)", "destination": "https://standards-trainer.vercel.app/standards/$1" },
 
+    { "source": "/notes", "destination": "https://note-trainer-eight.vercel.app/notes" },
+    { "source": "/notes/(.*)", "destination": "https://note-trainer-eight.vercel.app/notes/$1" },
+
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

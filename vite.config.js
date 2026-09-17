@@ -12,6 +12,7 @@ const ZONES = {
   "/altered": "http://localhost:5183",
   "/circle": "http://localhost:5184",
   "/triads": "http://localhost:5185",
+  "/notes": "http://localhost:5186",
 };
 
 export default defineConfig({

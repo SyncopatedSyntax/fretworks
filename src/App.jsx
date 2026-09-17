@@ -17,6 +17,7 @@ const SHOTS = {
   alt: "/shots/alt.webp",
   circle: "/shots/circle.webp",
   triads: "/shots/triads.webp",
+  notes: "/shots/notes.webp",
 };
 
 // Hero fretboard — cycles through 4 real, theory-verified patterns (one per app).
@@ -213,7 +214,7 @@ export default function Brochure() {
                 style={{ "--accent": t.accent }} aria-label={"Launch " + t.name}>
                 <span className="card-bar" />
                 <span className="phone">
-                  <img src={SHOTS[t.key]} alt={t.name + " app screenshot"} loading="lazy" />
+                  {SHOTS[t.key] && <img src={SHOTS[t.key]} alt={t.name + " app screenshot"} loading="lazy" />}
                 </span>
                 <div className="card-content">
                   <div className="card-head">

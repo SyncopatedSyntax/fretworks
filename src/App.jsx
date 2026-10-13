@@ -18,6 +18,7 @@ const SHOTS = {
   circle: "/shots/circle.webp",
   triads: "/shots/triads.webp",
   notes: "/shots/notes.webp",
+  blues: "/shots/blues.webp",
 };
 
 // Hero fretboard — cycles through 4 real, theory-verified patterns (one per app).

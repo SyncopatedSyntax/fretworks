@@ -27,6 +27,8 @@
 
     { "source": "/notes", "destination": "https://note-trainer-eight.vercel.app/notes" },
     { "source": "/notes/(.*)", "destination": "https://note-trainer-eight.vercel.app/notes/$1" },
+    { "source": "/blues", "destination": "https://blues-scale-trainer.vercel.app/blues" },
+    { "source": "/blues/(.*)", "destination": "https://blues-scale-trainer.vercel.app/blues/$1" },
 
     { "source": "/(.*)", "destination": "/index.html" }
   ]

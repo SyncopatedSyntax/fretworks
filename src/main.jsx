@@ -5,6 +5,7 @@ import "@fretworks/design/styles.css";
 import Brochure from "./App.jsx";
 import Launcher from "./Launcher.jsx";
 import Backup from "./Backup.jsx";
+import Account from "./Account.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -18,6 +19,8 @@ createRoot(document.getElementById("root")).render(
             because every trainer is proxied onto this origin, so one sweep of
             localStorage already covers all of them. */}
         <Route path="/backup" element={<Backup />} />
+        {/* /account = sign in to sync progress across devices (optional). */}
+        <Route path="/account" element={<Account />} />
         {/* Unknown shell paths fall back to the brochure */}
         <Route path="*" element={<Brochure />} />
       </Routes>

@@ -6,15 +6,19 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "verify": "node scripts/verify-sync.mjs",
+    "dev:api": "npm run build && node scripts/dev-server.mjs 4300"
   },
   "dependencies": {
     "@fretworks/design": "github:SyncopatedSyntax/fretworks-design",
+    "@neondatabase/serverless": "^1.2.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.28.0"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.10",
     "@vitejs/plugin-react": "^4.3.4",
     "vite": "^5.4.10"
   }

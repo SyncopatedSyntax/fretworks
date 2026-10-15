@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { TopBar, InstallPrompt, TOOLS, tokens } from "@fretworks/design";
+import { TopBar, InstallPrompt, TOOLS, tokens, SyncStatus } from "@fretworks/design";
 import { maybeAutoBackup } from "./lib/githubBackup.js";
 
 /* /app — the fast launcher for returning users and the installed PWA. No sales
@@ -17,6 +17,9 @@ export default function Launcher() {
       <main className="fw-launcher">
         <h1 className="fw-launcher-title">Your toolbox</h1>
         <p className="fw-launcher-sub">Pick a trainer to jump straight in.</p>
+        {/* Same line as the drawer: sign in to sync, or who is signed in and when
+            it last synced. The launcher is where people land, so it is shown here too. */}
+        <div style={{ margin: "0 -10px 14px" }}><SyncStatus /></div>
 
         <div className="fw-launcher-grid">
           {TOOLS.map((t) => (

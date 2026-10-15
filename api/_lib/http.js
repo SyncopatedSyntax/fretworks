@@ -95,4 +95,10 @@ export async function allow(bucket, limit, windowSec) {
   return Number(rows[0].n) <= limit;
 }
 
-export const admins = () => (process.env.FW_ADMIN_USERS || '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+// Who may reset other people's passwords. Written into the code because the
+// project's environment variables cannot be set from here; a username is not a
+// secret (admin still means signing in with that account's password).
+// FW_ADMIN_USERS (comma-separated) adds more without a code change.
+const ADMINS = ['zakarue'];
+export const admins = () => [...new Set([...ADMINS,
+  ...(process.env.FW_ADMIN_USERS || '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean)])];

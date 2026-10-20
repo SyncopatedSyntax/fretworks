@@ -36,6 +36,9 @@
     { "source": "/harmonic-minor", "destination": "https://harmonic-minor-trainer.vercel.app/harmonic-minor" },
     { "source": "/harmonic-minor/(.*)", "destination": "https://harmonic-minor-trainer.vercel.app/harmonic-minor/$1" },
 
+    { "source": "/major", "destination": "https://major-scale-trainer-murex.vercel.app/major" },
+    { "source": "/major/(.*)", "destination": "https://major-scale-trainer-murex.vercel.app/major/$1" },
+
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

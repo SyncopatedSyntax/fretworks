@@ -21,6 +21,7 @@ const SHOTS = {
   blues: "/shots/blues.webp",
   nm: "/shots/nm.webp",
   hm: "/shots/hm.webp",
+  major: "/shots/major.webp",
 };
 
 // Hero fretboard — cycles through 4 real, theory-verified patterns (one per app).

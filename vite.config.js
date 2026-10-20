@@ -16,6 +16,7 @@ const ZONES = {
   "/blues": "http://localhost:5187",
   "/natural-minor": "http://localhost:5188",
   "/harmonic-minor": "http://localhost:5189",
+  "/major": "http://localhost:5190",
 };
 
 export default defineConfig({

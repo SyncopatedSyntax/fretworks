@@ -14,6 +14,8 @@ const ZONES = {
   "/triads": "http://localhost:5185",
   "/notes": "http://localhost:5186",
   "/blues": "http://localhost:5187",
+  "/natural-minor": "http://localhost:5188",
+  "/harmonic-minor": "http://localhost:5189",
 };
 
 export default defineConfig({

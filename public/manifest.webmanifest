@@ -1,7 +1,7 @@
 {
   "name": "Fretworks",
   "short_name": "Fretworks",
-  "description": "Free, mobile-first fretboard trainers for chords, scales, and harmony — by SyncopatedSyntax.",
+  "description": "Free, mobile-first guitar trainers for notes, chords, scales, harmony and tunes — by SyncopatedSyntax.",
   "start_url": "/app",
   "scope": "/",
   "display": "standalone",

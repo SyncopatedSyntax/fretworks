@@ -1,28 +1,17 @@
 import { useEffect, useState } from "react";
-import { BRAND, STUDIO, MAKER, KOFI, TOOLS, LEARNING_PATH as PATH } from "@fretworks/design";
+import { BRAND, STUDIO, MAKER, KOFI, TOOLS, TOOL_GROUPS, START_PATHS } from "@fretworks/design";
 
 /* ──────────────────────────────────────────────────────────────────────────
-   Fretworks — landing portal for new visitors. Brand, tool registry, learning
-   path and Ko-fi link all come from @fretworks/design — the single source of
-   truth shared with the launcher, the in-tool drawer and the trainers.
-   Card banners are real app screenshots, served from public/shots/<key>.webp.
+   Fretworks — landing portal for new visitors. Brand, tool registry, the
+   families, the "where to start" goals and the Ko-fi link all come from
+   @fretworks/design — the single source of truth shared with the launcher,
+   the in-tool drawer and the trainers.
    ────────────────────────────────────────────────────────────────────────── */
 
-// Card banner screenshots (cropped WebP), served as static files.
-const SHOTS = {
-  chord: "/shots/chord.webp",
-  focus: "/shots/focus.webp",
-  diatonic: "/shots/diatonic.webp",
-  mm: "/shots/mm.webp",
-  alt: "/shots/alt.webp",
-  circle: "/shots/circle.webp",
-  triads: "/shots/triads.webp",
-  notes: "/shots/notes.webp",
-  blues: "/shots/blues.webp",
-  nm: "/shots/nm.webp",
-  hm: "/shots/hm.webp",
-  major: "/shots/major.webp",
-};
+// Each card's screenshot: public/shots/<key>.webp, 360×782 WebP. Every tool
+// needs one — scripts/check-shots.mjs fails the build without it (Standards
+// once shipped with an empty phone frame).
+const shot = (key) => `/shots/${key}.webp`;
 
 // Hero fretboard — cycles through 4 real, theory-verified patterns (one per app).
 // s = string (1=high e .. 6=low E), f = relative fret in window, d = degree label.
@@ -30,18 +19,27 @@ const PATTERNS = [{"name":"maj7 chord","sub":"Chord Trainer","start":2,"dots":[{
 
 function tool(key) { return TOOLS.find((t) => t.key === key); }
 
-function HeroFretboard() {
-  const [reduced, setReduced] = useState(false);
-  const [st, setSt] = useState({ ci: 0, ck: 0, pi: -1, pk: -1 });
-
+// A media query as state, read up front so the first paint already matches.
+function useMedia(query) {
+  const read = () => !!(window.matchMedia && window.matchMedia(query).matches);
+  const [on, setOn] = useState(read);
   useEffect(() => {
-    const mq = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)");
+    const mq = window.matchMedia && window.matchMedia(query);
     if (!mq) return;
-    setReduced(mq.matches);
-    const h = (e) => setReduced(e.matches);
+    setOn(mq.matches);
+    const h = (e) => setOn(e.matches);
     mq.addEventListener ? mq.addEventListener("change", h) : mq.addListener(h);
     return () => { mq.removeEventListener ? mq.removeEventListener("change", h) : mq.removeListener(h); };
-  }, []);
+  }, [query]);
+  return on;
+}
+
+function HeroFretboard() {
+  const reduced = useMedia("(prefers-reduced-motion: reduce)");
+  // On a phone the board is drawn with narrower frets, so it scales down less:
+  // at full width its note labels came out about 7px tall.
+  const narrow = useMedia("(max-width: 640px)");
+  const [st, setSt] = useState({ ci: 0, ck: 0, pi: -1, pk: -1 });
 
   const POP_IN = 360, STAG_IN = 55, IN_LEAD = 150, HOLD = 350, POP_OUT = 230, STAG_OUT = 45;
   const nMarks = (i) => PATTERNS[i].dots.length + (PATTERNS[i].squares ? PATTERNS[i].squares.length : 0);
@@ -62,8 +60,9 @@ function HeroFretboard() {
     return () => clearTimeout(id);
   }, [st.pk, st.pi, reduced]);
 
-  const NX0 = 46, NX1 = 626, NY0 = 44, NY1 = 212;
-  const FW = (NX1 - NX0) / 6, RG = (NY1 - NY0) / 5;
+  const NX0 = 46, NY0 = 44, NY1 = 212;
+  const FW = narrow ? 60 : 580 / 6, NX1 = NX0 + 6 * FW, RG = (NY1 - NY0) / 5;
+  const VW = narrow ? NX1 + 20 : 672;
   const X = (f) => NX0 + (f + 0.5) * FW;
   const Y = (sNum) => NY0 + (sNum - 1) * RG;
   const strLabels = ["e", "B", "G", "D", "A", "E"];
@@ -123,7 +122,7 @@ function HeroFretboard() {
   return (
     <div className="fretboard-wrap" role="img"
       aria-label={"Animated fretboard showing a " + PATTERNS[capIdx].name + " pattern in the " + PATTERNS[capIdx].sub + " style"}>
-      <svg className="hero-fret" viewBox="0 0 672 258" preserveAspectRatio="xMidYMid meet">
+      <svg className="hero-fret" viewBox={`0 0 ${VW} 258`} preserveAspectRatio="xMidYMid meet">
         <text x={NX0} y={NY0 - 16} className="hcap" fill="#7a7796">{PATTERNS[capIdx].sub}</text>
         <rect x={NX0} y={NY0} width={NX1 - NX0} height={NY1 - NY0} rx="6" fill="#15131f" stroke="#2a2840" />
         {[0, 1, 2, 3, 4, 5, 6].map((i) => (
@@ -187,79 +186,64 @@ export default function Brochure() {
 
         {/* Hero */}
         <section className="hero">
-          <p className="eyebrow">Free · Mobile-first · No sign-up · Works offline</p>
+          <p className="eyebrow">Free · Works offline · No account needed</p>
           <h1 className="h1">
             Make the whole fretboard <span className="accent">make sense</span>.
           </h1>
           <p className="lede">
-            A growing set of focused trainers for chords, scales, and harmony — colour-coded by what
-            each note actually does, so the whole neck finally makes sense. Built for any guitarist who
-            wants to truly understand what they&rsquo;re playing, in any style.
+            A toolbox of {TOOLS.length} focused trainers for notes, chords, scales, harmony and
+            tunes — colour-coded by what each note actually does, with practice that brings things
+            back just before you&rsquo;d forget them. Built for any guitarist who wants to truly
+            understand what they&rsquo;re playing, in any style.
           </p>
 
           <HeroFretboard />
 
           <div className="cta-row">
-            <a className="btn btn-primary" href={tool("chord").path}>
-              Start with Chord Trainer →
-            </a>
-            <a className="btn btn-ghost" href="#tools">Browse all tools</a>
+            <a className="btn btn-primary" href="#start">Find your starting point ↓</a>
+            <a className="btn btn-ghost" href="#tools">Browse all {TOOLS.length} trainers</a>
           </div>
         </section>
 
         <Divider />
 
-        {/* Tools */}
+        <StartChooser />
+
+        <Divider />
+
+        {/* Tools, family by family */}
         <section id="tools" className="block">
           <h2 className="h2">The toolbox</h2>
-          <div className="tools">
-            {TOOLS.map((t) => (
-              <a key={t.key} className="card" href={t.path}
-                style={{ "--accent": t.accent }} aria-label={"Launch " + t.name}>
-                <span className="card-bar" />
-                <span className="phone">
-                  {SHOTS[t.key] && <img src={SHOTS[t.key]} alt={t.name + " app screenshot"} loading="lazy" />}
-                </span>
-                <div className="card-content">
-                  <div className="card-head">
-                    <span className="card-emoji" aria-hidden="true">{t.emoji}</span>
-                    <span className="card-name">{t.name}</span>
-                    {t.note && <span className="card-note">{t.note}</span>}
-                  </div>
-                  <span className="skill">{t.skill}</span>
-                  <p className="desc">{t.blurb}</p>
-                  <div className="chips">
-                    {t.chips.map((c) => <span key={c} className="chip">{c}</span>)}
-                  </div>
-                  <span className="launch">Launch <span className="launch-arrow">↗</span></span>
+          <p className="sub">{TOOLS.length} trainers in {TOOL_GROUPS.length} groups. Tap one to open it.</p>
+          {TOOL_GROUPS.map((g) => {
+            const list = TOOLS.filter((t) => t.group === g.key);
+            return (
+              <div key={g.key} className="tgroup">
+                <h3 className="ghead">{g.name} <span>{list.length}</span></h3>
+                <div className="tools">
+                  {list.map((t) => <ToolCard key={t.key} t={t} />)}
                 </div>
-              </a>
-            ))}
-          </div>
+              </div>
+            );
+          })}
         </section>
 
         <Divider />
 
-        {/* Learning path */}
+        {/* What every trainer shares */}
         <section className="block">
-          <h2 className="h2">Where to start</h2>
-          <p className="sub">A natural order — but every tool stands on its own.</p>
-          <ol className="path">
-            {PATH.map((p, i) => {
-              const t = tool(p.key);
-              return (
-                <li key={p.key} className="step" style={{ "--accent": t.accent }}>
-                  <a className="step-link" href={t.path}>
-                    <span className="stepnum">{String(i + 1).padStart(2, "0")}</span>
-                    <span className="step-body">
-                      <span className="step-name">{t.name} <span className="step-go">↗</span></span>
-                      <span className="step-why">{p.why}</span>
-                    </span>
-                  </a>
-                </li>
-              );
-            })}
-          </ol>
+          <h2 className="h2">Built to make practice stick</h2>
+          <div className="feats">
+            {FEATURES.map((f) => (
+              <div key={f.title} className="feat">
+                <span className="ficon" aria-hidden="true">{f.icon}</span>
+                <span>
+                  <span className="fh">{f.title}</span>
+                  <span className="fp">{f.text}</span>
+                </span>
+              </div>
+            ))}
+          </div>
         </section>
 
         <Divider />
@@ -268,7 +252,10 @@ export default function Brochure() {
         <section className="block two-col">
           <div className="panel">
             <h3 className="h3">Keep it on your home screen</h3>
-            <p className="panel-text">Every tool installs like an app and runs offline — no App Store needed.</p>
+            <p className="panel-text">
+              Add the whole toolbox from this page, or open any trainer and add just that one — it
+              gets its own icon. Everything works offline, no App Store needed.
+            </p>
             <div className="install-steps">
               <div className="istep">
                 <div className="istep-icon">
@@ -305,6 +292,12 @@ export default function Brochure() {
                 </div>
               </div>
             </div>
+            {/* iOS gives every Home Screen icon its own storage, so a second icon
+                starts empty until you sign in. */}
+            <p className="panel-text inote">
+              On iPhone each icon keeps its own progress. <a href="/account">Sign in</a> (free, no
+              email) and they all share it.
+            </p>
           </div>
           <div className="panel">
             <h3 className="h3">This is my practice, made shareable</h3>
@@ -314,9 +307,10 @@ export default function Brochure() {
               name {STUDIO}. As my playing grows, the toolbox grows with it.
             </p>
             <p className="panel-text">
-              I play other styles too, so this won&rsquo;t stay jazz-only — expect trainers for more
-              genres over time. It&rsquo;s free and always expanding, and I&rsquo;d love for you to learn
-              alongside me. If something clicks, breaks, or sparks an idea, tell me.
+              It started with jazz and has already grown past it — the blues, the major and minor
+              scales, triads and the notes themselves now have trainers of their own. It&rsquo;s free
+              and always expanding, and I&rsquo;d love for you to learn alongside me. If something
+              clicks, breaks, or sparks an idea, tell me.
             </p>
             <div className="panel-actions">
               <a className="btn btn-kofi" href={KOFI} target="_blank" rel="noopener noreferrer">
@@ -333,7 +327,11 @@ export default function Brochure() {
         <footer className="footer">
           <span>More tools on the way.</span>
           <span className="footer-dot">·</span>
-          <span>Built by {STUDIO}</span>
+          <a href="/app">Open the app</a>
+          <span className="footer-dot">·</span>
+          <a href="/account">Sign in</a>
+          <span className="footer-dot">·</span>
+          <a href="/backup">Back up</a>
           <span className="footer-dot">·</span>
           <a href={KOFI} target="_blank" rel="noopener noreferrer">Ko-fi</a>
           <span className="footer-dot">·</span>
@@ -343,6 +341,95 @@ export default function Brochure() {
     </div>
   );
 }
+
+// "Where do you want to start?" — pick a goal, get its short path. Replaces the
+// old single learning path through every tool (see START_PATHS in tools.js).
+function StartChooser() {
+  const [sel, setSel] = useState(0);
+  const g = START_PATHS[sel];
+  const first = tool(g.steps[0].key);
+  const alt = g.or && tool(g.or.key);
+  return (
+    <section id="start" className="block">
+      <h2 className="h2">Where do you want to start?</h2>
+      <p className="sub">
+        Pick what you want to get better at. Each path is a few trainers, in order — and every
+        trainer also works on its own.
+      </p>
+      <div className="gchips" role="group" aria-label="What do you want to work on?">
+        {START_PATHS.map((p, i) => (
+          <button key={p.key} type="button" className={"gchip" + (i === sel ? " on" : "")}
+            aria-pressed={i === sel} onClick={() => setSel(i)}>
+            {p.label}
+          </button>
+        ))}
+      </div>
+      <div className="gpanel" aria-live="polite">
+        <h3 className="gtitle">{g.title}</h3>
+        <ol className="gsteps">
+          {g.steps.map((s, i) => {
+            const t = tool(s.key);
+            return (
+              <li key={s.key} className="gstep" style={{ "--accent": t.accent }}>
+                <span className="gnum" aria-hidden="true">{i + 1}</span>
+                <span className="gbody">
+                  <a className="gname" href={t.path}><span aria-hidden="true">{t.emoji}</span> {t.name}</a>
+                  <span className="gwhy">{s.why}</span>
+                </span>
+              </li>
+            );
+          })}
+        </ol>
+        {alt && (
+          <p className="galt">
+            Or: <a href={alt.path} style={{ color: alt.accent }}>{alt.name}</a>. {g.or.why}
+          </p>
+        )}
+        <a className="btn gbtn" href={first.path} style={{ "--accent": first.accent }}>
+          Start with {first.name} →
+        </a>
+      </div>
+    </section>
+  );
+}
+
+function ToolCard({ t }) {
+  return (
+    <a className="card" href={t.path} style={{ "--accent": t.accent }} aria-label={"Open " + t.name}>
+      <span className="card-bar" />
+      <span className="phone">
+        <img src={shot(t.key)} alt="" loading="lazy" width="360" height="782" />
+      </span>
+      <span className="card-content">
+        <span className="card-name">
+          <span aria-hidden="true">{t.emoji}</span> {t.name} <span className="card-go" aria-hidden="true">↗</span>
+        </span>
+        <span className="skill">{t.skill}</span>
+        <span className="desc">{t.blurb}</span>
+        <span className="chips">
+          {t.chips.map((c) => <span key={c} className="chip">{c}</span>)}
+        </span>
+      </span>
+    </a>
+  );
+}
+
+// What the trainers share — none of it was on the page before. Keep each line
+// true of the toolbox as it is, not as planned.
+const FEATURES = [
+  { icon: "↻", title: "It brings things back before you forget them",
+    text: "Most trainers use spaced repetition: each review is scheduled for you, just before you’d forget." },
+  { icon: "♪", title: "Hear it as you learn it",
+    text: "Tap a chord, a scale shape or a single note to hear it." },
+  { icon: "🎤", title: "It listens",
+    text: "Note Trainer hears the note you play on your own guitar." },
+  { icon: "☁", title: "Your progress follows you",
+    text: "An optional free account — a username and password, no email — keeps your phone, tablet and computer in step." },
+  { icon: "✓", title: "Checked note for note",
+    text: "Every chord, scale shape and progression is checked against the theory by script — more than 250,000 automated checks." },
+  { icon: "⇩", title: "Works offline",
+    text: "Add the whole toolbox to your Home Screen, or just the trainers you use." },
+];
 
 function Divider() {
   return (
@@ -430,44 +517,58 @@ const CSS = `
 .sub,.panel-text{color:var(--muted);}
 .sub{margin:0 0 20px;font-size:14.5px;}
 
-.tools{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px;}
-.card{position:relative;display:flex;flex-direction:row;gap:16px;align-items:stretch;background:var(--surface);
-  border:1px solid var(--border);border-radius:18px;padding:18px 18px 18px 22px;overflow:hidden;
+#start,#tools{scroll-margin-top:12px;}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth;}}
+
+.gchips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px;}
+.gchip{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:14px;min-height:44px;padding:0 16px;
+  border-radius:999px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:.15s;}
+.gchip:hover{border-color:var(--muted);color:var(--text);}
+.gchip.on{background:var(--accent-y);border-color:var(--accent-y);color:#19160a;}
+.gpanel{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:18px;max-width:680px;}
+.gtitle{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:17px;letter-spacing:-0.01em;margin:0 0 6px;}
+.gsteps{list-style:none;margin:0;padding:0;}
+.gstep{position:relative;display:flex;gap:12px;align-items:flex-start;padding:8px 0;}
+.gstep:not(:last-child):after{content:"";position:absolute;left:13px;top:36px;bottom:-8px;width:2px;background:var(--border);}
+.gnum{flex:0 0 auto;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--surface);
+  border:1.5px solid var(--accent);color:var(--accent);font-family:"JetBrains Mono",monospace;font-weight:600;font-size:12px;}
+.gbody{display:flex;flex-direction:column;gap:2px;padding-top:3px;min-width:0;}
+.gname{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:15px;color:var(--accent);text-decoration:none;}
+.gname:hover{text-decoration:underline;}
+.gwhy{font-size:13.5px;color:var(--muted);line-height:1.45;}
+.galt{font-size:13.5px;color:var(--muted);margin:6px 0 2px;padding:10px 12px;border:1px dashed var(--border);border-radius:12px;line-height:1.45;}
+.galt a{font-weight:600;text-decoration:none;}
+.gbtn{margin-top:14px;width:100%;justify-content:center;background:var(--accent);color:#0f0e17;box-shadow:0 6px 22px -10px var(--accent);}
+.gbtn:hover{transform:translateY(-2px);}
+
+.tgroup{margin-top:22px;}
+.ghead{font-family:"JetBrains Mono",monospace;font-size:11.5px;font-weight:600;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--faint);margin:0 0 10px;}
+.ghead span{color:#4a4766;margin-left:4px;}
+.tools{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.card{position:relative;display:flex;gap:14px;align-items:flex-start;background:var(--surface);
+  border:1px solid var(--border);border-radius:16px;padding:14px 14px 14px 18px;overflow:hidden;
   text-decoration:none;color:inherit;transition:transform .18s,border-color .18s,box-shadow .18s;}
-.card-bar{position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--accent);z-index:2;}
-.phone{flex:0 0 auto;width:118px;padding:3px;background:#000;border:1px solid #34324a;
-  border-radius:22px;box-shadow:0 12px 28px -14px #000;overflow:hidden;align-self:flex-start;}
-.phone img{display:block;width:100%;height:auto;border-radius:18px;}
-.card-content{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:9px;}
-.card-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-.card-emoji{font-size:20px;}
-.card-name{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:18px;letter-spacing:-0.01em;}
-.card-note{font-family:"JetBrains Mono",monospace;font-size:10px;font-weight:600;letter-spacing:.04em;
-  text-transform:uppercase;color:var(--accent);border:1px solid var(--accent);border-radius:20px;
-  padding:2px 8px;opacity:.9;}
+.card-bar{position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent);}
+.phone{flex:0 0 auto;width:96px;padding:2px;background:#000;border:1px solid #34324a;
+  border-radius:16px;box-shadow:0 10px 24px -14px #000;overflow:hidden;}
+.phone img{display:block;width:100%;height:auto;border-radius:13px;}
+.card-content{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:6px;}
+.card-name{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:17px;letter-spacing:-0.01em;line-height:1.3;}
+.card-go{display:inline-block;color:var(--accent);font-size:14px;transition:transform .18s;}
 .skill{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--faint);letter-spacing:.02em;}
-.desc{font-size:14px;color:var(--muted);margin:0;line-height:1.5;}
+.desc{font-size:13.5px;color:var(--muted);margin:0;line-height:1.5;}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px;}
 .chip{font-family:"JetBrains Mono",monospace;font-size:10.5px;color:#c9c5da;
   background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:4px 8px;}
-.launch{margin-top:auto;padding-top:2px;font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:14px;color:var(--accent);}
-.launch-arrow{display:inline-block;transition:transform .18s;}
 .card:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 16px 40px -18px var(--accent);}
-.card:hover .launch-arrow{transform:translate(2px,-2px);}
+.card:hover .card-go{transform:translate(2px,-2px);}
 
-.path{list-style:none;margin:18px 0 0;padding:0;position:relative;}
-.path:before{content:"";position:absolute;left:25px;top:14px;bottom:14px;width:2px;background:#2a2840;}
-.step{position:relative;}
-.step-link{display:flex;gap:16px;align-items:flex-start;text-decoration:none;color:inherit;
-  padding:12px 12px 12px 0;border-radius:12px;transition:.18s;}
-.step-link:hover{background:var(--surface);}
-.stepnum{flex:0 0 auto;width:34px;height:34px;display:grid;place-items:center;border-radius:50%;
-  background:var(--surface);border:1px solid var(--accent);color:var(--accent);
-  font-family:"JetBrains Mono",monospace;font-weight:600;font-size:13px;position:relative;z-index:1;}
-.step-body{display:flex;flex-direction:column;gap:2px;padding-top:5px;}
-.step-name{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:16px;}
-.step-go{color:var(--accent);font-size:13px;}
-.step-why{font-size:13.5px;color:var(--muted);}
+.feats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px;}
+.feat{display:flex;gap:12px;align-items:flex-start;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px 14px;}
+.ficon{flex:0 0 auto;width:30px;height:30px;border-radius:9px;background:#1a1830;display:grid;place-items:center;color:var(--accent-y);font-size:15px;}
+.fh{display:block;font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:15px;line-height:1.35;}
+.fp{display:block;font-size:13.5px;color:var(--muted);line-height:1.45;margin-top:2px;}
 
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
 .panel{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:22px;}
@@ -483,6 +584,8 @@ const CSS = `
 .h3{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:17px;margin:0 0 8px;letter-spacing:-0.01em;}
 .panel-text{font-size:14px;margin:0 0 10px;line-height:1.6;}
 .muted{color:var(--muted);}
+.inote{margin:12px 0 0;font-size:13px;}
+.inote a{color:var(--accent-y);font-weight:600;text-decoration:none;}
 
 .footer{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:46px;padding-top:22px;
   border-top:1px solid var(--border);font-size:13px;color:var(--faint);}
@@ -490,19 +593,31 @@ const CSS = `
 .footer a:hover{color:var(--accent-y);}
 .footer-dot{color:var(--border);}
 
-a:focus-visible,.card:focus-visible{outline:2px solid var(--accent-y);outline-offset:3px;}
+a:focus-visible,.card:focus-visible,.gchip:focus-visible{outline:2px solid var(--accent-y);outline-offset:3px;}
 
 @media (max-width:640px){
-  .tools{grid-template-columns:1fr;}
+  .tools{grid-template-columns:1fr;gap:10px;}
+  .card{padding:12px 12px 12px 16px;gap:12px;}
+  .phone{width:78px;border-radius:14px;}
+  .phone img{border-radius:11px;}
+  .card-name{font-size:16px;}
+  .desc{font-size:13px;}
+  .feats{grid-template-columns:1fr;}
   .two-col{grid-template-columns:1fr;}
   .btn{flex:1 1 auto;justify-content:center;}
   .kofi-support .kofi-support-full{display:none;}
   .kofi-support .kofi-support-icon{display:inline;}
 }
+/* The smallest phones (320px): the top bar did not fit. */
+@media (max-width:360px){
+  .brand-mark{display:none;}
+  .brand-name{font-size:28px;}
+  .kofi-link{padding:7px 10px;}
+}
 @media (prefers-reduced-motion:reduce){
   .hdot,.hdot.in,.hdot.out,.hlines,.hlines.in,.hlines.out,.hmw,.hmw.in,.hmw.out{animation:none;opacity:1;transform:none;}
   .hpulse{animation:none;opacity:.25;}
-  .btn,.card,.launch-arrow,.step-link,.kofi-link{transition:none;}
-  .btn-primary:hover,.btn-kofi:hover,.card:hover{transform:none;}
+  .btn,.card,.card-go,.gchip,.kofi-link{transition:none;}
+  .btn-primary:hover,.btn-kofi:hover,.gbtn:hover,.card:hover,.card:hover .card-go{transform:none;}
 }
 `;

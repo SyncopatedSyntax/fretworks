@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "node scripts/check-shots.mjs && vite build",
     "preview": "vite preview",
     "verify": "node scripts/verify-sync.mjs",
     "dev:api": "npm run build && node scripts/dev-server.mjs 4300"

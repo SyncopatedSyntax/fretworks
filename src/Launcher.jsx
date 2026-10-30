@@ -1,5 +1,11 @@
 import { useEffect } from "react";
-import { TopBar, InstallPrompt, TOOLS, tokens, SyncStatus } from "@fretworks/design";
+import { TopBar, InstallPrompt, TOOLS, TOOL_GROUPS, tokens, SyncStatus } from "@fretworks/design";
+
+// Family heading above each group of cards — the same families as the brochure.
+const GROUP_HEAD = {
+  fontFamily: "var(--font-mono)", fontSize: "11.5px", fontWeight: 600, letterSpacing: ".08em",
+  textTransform: "uppercase", color: tokens.faint, margin: "22px 2px 10px",
+};
 import { maybeAutoBackup } from "./lib/githubBackup.js";
 
 /* /app — the fast launcher for returning users and the installed PWA. No sales
@@ -21,25 +27,30 @@ export default function Launcher() {
             it last synced. The launcher is where people land, so it is shown here too. */}
         <div style={{ margin: "0 -10px 14px" }}><SyncStatus /></div>
 
-        <div className="fw-launcher-grid">
-          {TOOLS.map((t) => (
-            <a
-              key={t.key}
-              className="fw-launch-card"
-              href={t.path}
-              style={{ "--accent": t.accent }}
-              aria-label={"Open " + t.name}
-            >
-              <span className="fw-launch-emoji" aria-hidden="true">{t.emoji}</span>
-              <span className="fw-launch-body">
-                <span className="fw-launch-name">{t.name}</span>
-                <span className="fw-launch-blurb">{t.blurb}</span>
-                <span className="fw-launch-skill">{t.skill}</span>
-              </span>
-              <span className="fw-launch-go" aria-hidden="true">→</span>
-            </a>
-          ))}
-        </div>
+        {TOOL_GROUPS.map((g, i) => (
+          <section key={g.key}>
+            <h2 style={i === 0 ? { ...GROUP_HEAD, marginTop: "6px" } : GROUP_HEAD}>{g.name}</h2>
+            <div className="fw-launcher-grid">
+              {TOOLS.filter((t) => t.group === g.key).map((t) => (
+                <a
+                  key={t.key}
+                  className="fw-launch-card"
+                  href={t.path}
+                  style={{ "--accent": t.accent }}
+                  aria-label={"Open " + t.name}
+                >
+                  <span className="fw-launch-emoji" aria-hidden="true">{t.emoji}</span>
+                  <span className="fw-launch-body">
+                    <span className="fw-launch-name">{t.name}</span>
+                    <span className="fw-launch-blurb">{t.blurb}</span>
+                    <span className="fw-launch-skill">{t.skill}</span>
+                  </span>
+                  <span className="fw-launch-go" aria-hidden="true">→</span>
+                </a>
+              ))}
+            </div>
+          </section>
+        ))}
 
         <div style={{ textAlign: "center", marginTop: "22px" }}>
           <a href="/backup" style={{ color: "#8a88a0", fontSize: "12px", textDecoration: "none" }}>
